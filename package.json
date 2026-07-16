@@ -1,0 +1,37 @@
+{
+  "name": "evercrest-work-order-bot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "vinext start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "drizzle-orm": "0.45.2",
+    "lucide-react": "latest",
+    "next": "latest",
+    "openai": "^6.45.0",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitejs/plugin-rsc": "^0.5.26",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "react-server-dom-webpack": "^19.2.6",
+    "typescript": "latest",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0",
+    "xlsx": "^0.18.5"
+  },
+  "type": "module"
+}

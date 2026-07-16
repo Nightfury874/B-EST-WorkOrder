@@ -1,0 +1,105 @@
+========================================================================
+EVERCREST WORK ORDER BOT - E2E TEST CASES AND VALIDATION RESULTS
+========================================================================
+
+Date of Execution: July 13, 2026
+Workspace: c:\Users\jibab\OneDrive\Desktop\Work\EVercrestWorkOrderBot
+Dev Server: http://localhost:3000
+Status of Tests: PASSED (100% success rate)
+
+This file contains the test cases, expected outcomes, and actual execution
+results verifying that non-emergencies are held back from staff escalation
+until all intake questions (both issue details and access info) are resolved,
+and that the dynamic differential, cost, and advice details are generated.
+
+------------------------------------------------------------------------
+TEST CASE 1: Non-Emergency HVAC / AC Cooling Failure (Guided Intake Flow)
+------------------------------------------------------------------------
+
+* Purpose:
+  Verify that an urgent but non-life-safety issue does NOT trigger an
+  immediate email or transition to "email_sent" status. Verify that the bot
+  interviews the tenant to collect access, contact, and AC symptoms, and
+  escalates only when the intake is complete.
+
+* Message 1 (Tenant):
+  "My AC is not cooling, it is 83 degrees inside"
+
+  - Expected Output:
+    - Issue Category: "No cooling / AC failure"
+    - Severity: "urgent"
+    - Conversation Status: Remains "needs_more_info" (Badge: NEEDS MORE INFO)
+    - Staff Handoff: "Will send when escalated" (Not generated yet)
+    - Bot response requests AC details (thermostat setpoint, airflow symptoms)
+      and access details (permission, pets, phone).
+
+  - Actual Output:
+    - Status: needs_more_info
+    - Severity: urgent
+    - Intake Complete: false
+    - Staff Handoff: Not Sent / Not Generated
+
+* Message 2 (Tenant):
+  "Yes, I have permission to enter when not home. No pets, no alarms, gate code is 9876. Best phone is 555-9000."
+
+  - Expected Output:
+    - Access details extracted correctly (Permission: yes, pets: no, alarm: no, gate code: 9876, phone: 555-9000).
+    - Conversation Status: STILL remains "needs_more_info" because critical AC symptoms (thermostat setpoint, airflow, outside unit fan status) are still unanswered.
+    - Staff Handoff: STILL "Will send when escalated".
+
+  - Actual Output:
+    - Status: needs_more_info
+    - Intake Complete: false
+    - Staff Handoff: Not Sent / Not Generated
+    - Heuristic Safeguard: Successfully verified that text questions are missing from 'missingInfo' and kept 'intakeComplete' as false.
+
+* Message 3 (Tenant):
+  "No restricted times. Thermostat is set to Cool at 70, but it's 83 inside. Air is blowing but it is warm. Outside unit fan is not spinning. No ice, no water, no burning smell. No vulnerable occupants."
+
+  - Expected Output:
+    - All critical details are now resolved.
+    - Conversation Status: Transitions to "email_sent" (Badge: EMAIL SENT)
+    - Staff Handoff: Transitions to "Email simulated as sent".
+    - Handoff email generated dynamically, including:
+      - Real access details (best phone 555-9000, gate code 9876, etc.)
+      - Real AI Differential Analysis (Condenser fan failure, low refrigerant, etc. with custom evidence)
+      - Houston-area cost ranges ($150-$350 diagnostic, $250-$900 repairs)
+      - Custom advice for the repairperson (multimeter, capacitor checks, disconnect checks)
+      - Historical similar case citations.
+
+  - Actual Output:
+    - Status: email_sent
+    - Intake Complete: true
+    - Handoff Email: Created successfully.
+    - Dynamic verification: All custom fields present and verified.
+    - Status of Test Case 1: SUCCESS
+
+------------------------------------------------------------------------
+TEST CASE 2: Emergency Flooding (Instant Escalation Flow)
+------------------------------------------------------------------------
+
+* Purpose:
+  Verify that a life-safety or active flooding emergency bypasses the guided
+  intake phase and escalates to staff immediately on the very first turn.
+
+* Message 1 (Tenant):
+  "There is water gushing out of the kitchen pipe and it is flooding the floor near the stove"
+
+  - Expected Output:
+    - Issue Category: "Active leak / water intrusion"
+    - Severity: "emergency"
+    - Conversation Status: Immediately transitions to "email_sent" (Badge: EMAIL SENT)
+    - Staff Handoff: Immediately transitions to "Email simulated as sent".
+    - Handoff email generated and sent to simulated outbox.
+    - Safety disclaimer displayed at the top of the bot response.
+
+  - Actual Output:
+    - Status: email_sent
+    - Severity: emergency
+    - Intake Complete: true
+    - Handoff Email: Created and sent to outbox.
+    - Safety warning displayed to the tenant immediately.
+    - Status of Test Case 2: SUCCESS
+
+========================================================================
+EOF
