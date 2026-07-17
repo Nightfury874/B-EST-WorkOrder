@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { updateConversationStatus } from "@/lib/serverStore";
 import { logSystemEvent } from "@/lib/systemLog";
-import type { ConversationStatus } from "@/lib/types";
+import type { ConversationStatus, ConversationRecord } from "@/lib/types";
 
 const allowedStatuses: ConversationStatus[] = ["active", "needs_more_info", "escalated", "ticket_submitted", "email_sent", "reviewed", "closed"];
 
