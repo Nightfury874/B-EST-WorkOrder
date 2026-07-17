@@ -9,7 +9,7 @@ import type { AttachmentNote, ConversationRecord, ConversationStatus } from "@/l
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await context.params;
-    const body = (await request.json()) as { body?: string; attachments?: AttachmentNote[] };
+    const body = (await request.json()) as { body?: string; attachments?: AttachmentNote[]; conversation?: ConversationRecord };
     const submittedAttachments = body.attachments ?? [];
     const messageBody = body.body?.trim() || (submittedAttachments.length
       ? submittedAttachments.length === 1 ? "Attached an image." : `Attached ${submittedAttachments.length} images.`
@@ -20,10 +20,14 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     }
 
     const conversations = await listConversations();
-    const conversation = conversations.find((item) => item.id === id);
+    let conversation = conversations.find((item) => item.id === id);
 
     if (!conversation) {
-      return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
+      if (body.conversation) {
+        conversation = await saveConversation(body.conversation);
+      } else {
+        return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
+      }
     }
 
     await logSystemEvent({

@@ -7,13 +7,13 @@ const allowedStatuses: ConversationStatus[] = ["active", "needs_more_info", "esc
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
-  const body = (await request.json()) as { status?: ConversationStatus };
+  const body = (await request.json()) as { status?: ConversationStatus; conversation?: ConversationRecord };
 
   if (!body.status || !allowedStatuses.includes(body.status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
 
-  const conversation = await updateConversationStatus(id, body.status);
+  const conversation = await updateConversationStatus(id, body.status, body.conversation);
   if (!conversation) {
     return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
   }

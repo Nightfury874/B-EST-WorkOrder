@@ -52,10 +52,16 @@ export async function saveConversation(conversation: ConversationRecord) {
   return nextConversation;
 }
 
-export async function updateConversationStatus(id: string, status: ConversationStatus) {
+export async function updateConversationStatus(id: string, status: ConversationStatus, fallbackConversation?: ConversationRecord) {
   const conversations = await listConversations();
-  const target = conversations.find((item) => item.id === id);
-  if (!target) return null;
+  let target = conversations.find((item) => item.id === id);
+  if (!target) {
+    if (fallbackConversation) {
+      target = fallbackConversation;
+    } else {
+      return null;
+    }
+  }
 
   const updated: ConversationRecord = {
     ...target,
@@ -63,7 +69,7 @@ export async function updateConversationStatus(id: string, status: ConversationS
     updatedAt: new Date().toISOString(),
   };
 
-  const next = conversations.map((item) => (item.id === id ? updated : item));
+  const next = [updated, ...conversations.filter((item) => item.id !== id)];
   await writeJsonFile(conversationsPath, next);
   return updated;
 }

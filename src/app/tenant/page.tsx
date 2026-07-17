@@ -134,7 +134,7 @@ export default function TenantChatPage() {
     setSaveState("saving");
 
     try {
-      const updated = await sendMessageToServer(conversation.id, userText, attachmentsToSend);
+      const updated = await sendMessageToServer(conversation.id, userText, attachmentsToSend, conversation);
       setConversation(updated);
       setPendingAttachmentIds([]);
       setSaveState("saved");

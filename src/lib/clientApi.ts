@@ -29,11 +29,16 @@ export async function saveConversationToServer(conversation: ConversationRecord)
   return data.conversation;
 }
 
-export async function sendMessageToServer(id: string, body: string, attachments: AttachmentNote[] = []): Promise<ConversationRecord> {
+export async function sendMessageToServer(
+  id: string,
+  body: string,
+  attachments: AttachmentNote[] = [],
+  conversation?: ConversationRecord
+): Promise<ConversationRecord> {
   const response = await fetch(`/api/conversations/${id}/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ body, attachments }),
+    body: JSON.stringify({ body, attachments, conversation }),
   });
 
   if (!response.ok) {
@@ -44,11 +49,15 @@ export async function sendMessageToServer(id: string, body: string, attachments:
   return data.conversation;
 }
 
-export async function updateConversationStatusOnServer(id: string, status: ConversationStatus): Promise<ConversationRecord> {
+export async function updateConversationStatusOnServer(
+  id: string,
+  status: ConversationStatus,
+  conversation?: ConversationRecord
+): Promise<ConversationRecord> {
   const response = await fetch(`/api/conversations/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, conversation }),
   });
 
   if (!response.ok) {

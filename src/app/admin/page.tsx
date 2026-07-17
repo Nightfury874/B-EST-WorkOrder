@@ -40,7 +40,7 @@ export default function AdminDashboard() {
 
   async function updateStatus(status: ConversationStatus) {
     if (!selected) return;
-    const updated = await updateConversationStatusOnServer(selected.id, status);
+    const updated = await updateConversationStatusOnServer(selected.id, status, selected);
     setConversations((items) => items.map((conversation) => (conversation.id === updated.id ? updated : conversation)));
     setLogs(await fetchSystemLogs());
   }
