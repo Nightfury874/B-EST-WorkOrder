@@ -12,7 +12,7 @@ type OutboxRecord = {
   deliveryStatus: StaffEmailReport["deliveryStatus"];
 };
 
-const dataDir = join(process.cwd(), "data");
+const dataDir = process.env.VERCEL ? join("/tmp", "data") : join(process.cwd(), "data");
 const conversationsPath = join(dataDir, "conversations.json");
 const outboxPath = join(dataDir, "staff_outbox.json");
 

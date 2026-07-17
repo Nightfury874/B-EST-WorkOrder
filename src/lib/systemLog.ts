@@ -2,7 +2,9 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { SystemLogEntry } from "./types";
 
-const logsPath = join(process.cwd(), "data", "system_logs.json");
+const logsPath = process.env.VERCEL
+  ? join("/tmp", "data", "system_logs.json")
+  : join(process.cwd(), "data", "system_logs.json");
 const MAX_LOG_ENTRIES = 500;
 
 async function readLogs(): Promise<SystemLogEntry[]> {
