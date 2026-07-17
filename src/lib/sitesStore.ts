@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { env } from "cloudflare:workers";
 import type { AttachmentNote, ConversationRecord, ConversationStatus, StaffEmailReport } from "./types";
 

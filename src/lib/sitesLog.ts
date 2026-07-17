@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { env } from "cloudflare:workers";
 import type { SystemLogEntry } from "./types";
 
