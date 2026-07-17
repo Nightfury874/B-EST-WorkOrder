@@ -3,7 +3,7 @@ import rulesData from "@/data/troubleshootingRules.json";
 import { formatCaseCitations, getSimilarCaseCitations } from "./cases";
 import { generateJsonCompletion, generateTextCompletion } from "./openai";
 import { STATE_EXTRACTION_PROMPT, REPLY_GENERATION_PROMPT } from "./prompts";
-import { logSystemEvent } from "./sitesLog";
+import { logSystemEvent } from "./systemLog";
 import { emptyTokenUsage } from "./tokenUsage";
 import type { AttachmentNote, ConversationRecord, Severity, StaffEmailReport, TokenUsage, VerdictState } from "./types";
 

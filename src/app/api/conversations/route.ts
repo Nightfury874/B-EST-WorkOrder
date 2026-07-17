@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { listConversations, saveConversation } from "@/lib/sitesStore";
-import { logSystemEvent } from "@/lib/sitesLog";
+import { listConversations, saveConversation } from "@/lib/serverStore";
+import { logSystemEvent } from "@/lib/systemLog";
 import type { ConversationRecord } from "@/lib/types";
 
 export async function GET() {

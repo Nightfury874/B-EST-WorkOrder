@@ -1,31 +1,28 @@
-import { env } from "cloudflare:workers";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { NextResponse } from "next/server";
 
-type StoredObject = {
-  body: ReadableStream;
-  httpMetadata?: { contentType?: string };
-  customMetadata?: Record<string, string>;
-};
-
-type RuntimeEnv = {
-  ATTACHMENTS?: {
-    get(key: string): Promise<StoredObject | null>;
-  };
-};
+const dataDir = join(process.cwd(), "data", "attachments");
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
-  const bucket = (env as unknown as RuntimeEnv).ATTACHMENTS;
-  if (!bucket) return NextResponse.json({ error: "Attachment storage is unavailable." }, { status: 503 });
 
-  const object = await bucket.get(`attachments/${id}`);
-  if (!object) return NextResponse.json({ error: "Attachment not found." }, { status: 404 });
+  try {
+    const metaPath = join(dataDir, `${id}.meta.json`);
+    const filePath = join(dataDir, id);
 
-  return new Response(object.body, {
-    headers: {
-      "Content-Type": object.httpMetadata?.contentType || "application/octet-stream",
-      "Content-Disposition": `inline; filename="${object.customMetadata?.filename || id}"`,
-      "Cache-Control": "private, max-age=3600",
-    },
-  });
+    const metaRaw = await readFile(metaPath, "utf8").catch(() => "{}");
+    const meta = JSON.parse(metaRaw) as { contentType?: string; filename?: string };
+    const body = await readFile(filePath);
+
+    return new Response(body, {
+      headers: {
+        "Content-Type": meta.contentType || "application/octet-stream",
+        "Content-Disposition": `inline; filename="${meta.filename || id}"`,
+        "Cache-Control": "private, max-age=3600",
+      },
+    });
+  } catch {
+    return NextResponse.json({ error: "Attachment not found." }, { status: 404 });
+  }
 }

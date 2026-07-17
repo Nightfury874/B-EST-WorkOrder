@@ -12,3 +12,4 @@ dist/
 .wrangler/
 *.tsbuildinfo
 .vite/
+.vercel

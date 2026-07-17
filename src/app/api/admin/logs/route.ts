@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listSystemLogs } from "@/lib/sitesLog";
+import { listSystemLogs } from "@/lib/systemLog";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
